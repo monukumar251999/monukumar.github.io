@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Monu Kumar — Data Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0d1117;
+    --surface2: #131920;
+    --border: #1e2d3d;
+    --accent: #00d9ff;
+    --accent2: #00ff9d;
+    --accent3: #ff6b35;
+    --text: #c9d1d9;
+    --text-dim: #6e7f8f;
+    --text-bright: #f0f6fc;
+    --mono: 'JetBrains Mono', monospace;
+    --serif: 'DM Serif Display', serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
+
+  /* ── CANVAS BG ── */
+  #canvas-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 4rem;
+    background: rgba(8,12,16,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--text-dim); }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 0;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 8rem 4rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-inner {
+    max-width: 780px;
+  }
+
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+  .hero-tag::before {
+    content: '';
+    display: inline-block;
+    width: 32px; height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-name {
+    font-family: var(--serif);
+    font-size: clamp(3.5rem, 8vw, 6.5rem);
+    color: var(--text-bright);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.35s forwards;
+  }
+
+  .hero-name em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .hero-title {
+    font-family: var(--mono);
+    font-size: 1rem;
+    color: var(--accent2);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.5s forwards;
+  }
+  .hero-title .cursor {
+    display: inline-block;
+    width: 2px; height: 1em;
+    background: var(--accent2);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+
+  .hero-summary {
+    font-size: 1.05rem;
+    color: var(--text);
+    max-width: 580px;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.65s forwards;
+  }
+
+  .hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.8s forwards;
+  }
+
+  .badge {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text-dim);
+    background: var(--surface);
+    transition: all 0.2s;
+  }
+  .badge:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,217,255,0.05);
+  }
+  .badge.cert {
+    border-color: rgba(0,255,157,0.4);
+    color: var(--accent2);
+    background: rgba(0,255,157,0.04);
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.95s forwards;
+  }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.8rem 2rem;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: translateX(-100%);
+    transition: transform 0.25s;
+    z-index: -1;
+  }
+  .btn:hover { color: var(--bg); }
+  .btn:hover::before { transform: translateX(0); }
+
+  .btn-ghost {
+    border-color: var(--border);
+    color: var(--text-dim);
+  }
+  .btn-ghost::before { background: var(--surface2); }
+  .btn-ghost:hover { color: var(--text-bright); }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: center;
+    gap: 5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 2.8rem;
+    color: var(--text-bright);
+    display: block;
+    line-height: 1;
+  }
+  .stat-num span { color: var(--accent); }
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+    display: block;
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 7rem 4rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: 2.8rem;
+    color: var(--text-bright);
+    letter-spacing: -0.02em;
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── EXPERIENCE ── */
+  #experience { background: var(--surface); }
+
+  .exp-card {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    padding: 2.5rem;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .exp-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .exp-card:hover { border-color: rgba(0,217,255,0.3); }
+  .exp-card:hover::before { opacity: 1; }
+
+  .exp-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .exp-role {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    color: var(--text-bright);
+  }
+  .exp-company {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-top: 0.3rem;
+  }
+  .exp-date {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .exp-achievements {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .exp-achievements li {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .exp-achievements li::before {
+    content: '▸';
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+    font-size: 0.8rem;
+  }
+
+  .highlight {
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  /* ── SKILLS ── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .skill-category {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 1.8rem;
+    border-radius: 2px;
+    transition: border-color 0.3s;
+  }
+  .skill-category:hover { border-color: rgba(0,217,255,0.25); }
+
+  .skill-cat-title {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .skill-cat-title::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .skill-tag {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .skill-tag:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,217,255,0.04);
+  }
+
+  /* ── CERTIFICATIONS ── */
+  #certifications { background: var(--surface); }
+
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .cert-card {
+    border: 1px solid rgba(0,255,157,0.2);
+    background: rgba(0,255,157,0.03);
+    padding: 2rem;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .cert-card::after {
+    content: '✦';
+    position: absolute;
+    top: 1.2rem; right: 1.5rem;
+    font-size: 1.2rem;
+    color: var(--accent2);
+    opacity: 0.4;
+  }
+  .cert-card:hover {
+    border-color: var(--accent2);
+    background: rgba(0,255,157,0.06);
+    transform: translateY(-2px);
+  }
+
+  .cert-issuer {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--accent2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.7rem;
+  }
+  .cert-name {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    color: var(--text-bright);
+    line-height: 1.3;
+  }
+
+  /* ── EDUCATION ── */
+  .edu-card {
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    transition: border-color 0.3s;
+    background: var(--surface);
+  }
+  .edu-card:hover { border-color: rgba(0,217,255,0.25); }
+
+  .edu-degree {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    color: var(--text-bright);
+    margin-bottom: 0.4rem;
+  }
+  .edu-inst {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  .edu-meta {
+    text-align: right;
+  }
+  .edu-year {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.8rem;
+    display: inline-block;
+  }
+
+  /* ── CONTACT ── */
+  #contact {
+    text-align: center;
+  }
+
+  .contact-inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .contact-title {
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--text-bright);
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+  .contact-title em { color: var(--accent); font-style: italic; }
+
+  .contact-sub {
+    font-size: 1rem;
+    color: var(--text-dim);
+    margin-bottom: 2.5rem;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+
+  .contact-link {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .contact-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,217,255,0.04);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+    position: relative;
+    z-index: 1;
+  }
+  .footer-text {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+  .footer-text span { color: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    #hero { padding: 6rem 1.5rem 3rem; }
+    .section-wrap { padding: 4rem 1.5rem; }
+    .stats-strip { padding: 2rem 1.5rem; gap: 2rem; flex-wrap: wrap; justify-content: center; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1.5rem; }
+    .exp-meta { flex-direction: column; }
+    .edu-card { flex-direction: column; }
+    .edu-meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Animated canvas background -->
+<canvas id="canvas-bg"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero"><span>//</span> monu.kumar</a>
+  <ul class="nav-links">
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#certifications">Certifications</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <p class="hero-tag">Data Engineer · Databricks Certified</p>
+    <h1 class="hero-name">Monu<br><em>Kumar</em></h1>
+    <p class="hero-title">
+      <span id="typed-title"></span><span class="cursor"></span>
+    </p>
+    <p class="hero-summary">
+      Databricks-certified Data Engineer with <strong style="color:var(--text-bright)">3.5+ years</strong> of experience designing and optimizing large-scale data pipelines on the Databricks Unified Data Analytics Platform — processing <strong style="color:var(--text-bright)">5TB+ of data daily</strong> with Delta Lake, PySpark, and Azure.
+    </p>
+    <div class="hero-badges">
+      <span class="badge cert">Databricks DE Professional</span>
+      <span class="badge cert">Databricks DE Associate</span>
+      <span class="badge">PySpark</span>
+      <span class="badge">Delta Lake</span>
+      <span class="badge">Azure Data Factory</span>
+      <span class="badge">CI/CD</span>
+    </div>
+    <div class="hero-cta">
+      <a class="btn" href="#contact">Get in touch</a>
+      <a class="btn btn-ghost" href="#experience">View experience</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip reveal">
+  <div class="stat">
+    <span class="stat-num">3.5<span>+</span></span>
+    <span class="stat-label">Years Experience</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">5<span>TB+</span></span>
+    <span class="stat-label">Daily Data Processed</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">2<span>×</span></span>
+    <span class="stat-label">Databricks Certified</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">30<span>%</span></span>
+    <span class="stat-label">Reporting Efficiency Boost</span>
+  </div>
+</div>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Experience</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="exp-card reveal">
+      <div class="exp-meta">
+        <div>
+          <h3 class="exp-role">Data Engineer</h3>
+          <p class="exp-company">▸ Infosys Limited · India</p>
+        </div>
+        <span class="exp-date">June 2022 — Present</span>
+      </div>
+      <ul class="exp-achievements">
+        <li>Built and optimized data pipelines on Databricks integrating with Azure Data Factory to ingest and transform <span class="highlight">5TB+ of data daily</span>, improving reporting efficiency by <span class="highlight">30%</span>.</li>
+        <li>Designed Delta Lake pipelines for ACID-compliant and versioned data, increasing data consistency and reliability by <span class="highlight">60%</span>.</li>
+        <li>Developed parameterized Databricks Notebooks and reusable Spark ETL frameworks, reducing pipeline failures by <span class="highlight">25%</span>.</li>
+        <li>Automated Databricks deployments with <span class="highlight">Azure DevOps CI/CD</span>, enabling faster, secure, and repeatable releases.</li>
+        <li>Managed Git repositories for Databricks/PySpark code, improving collaboration, version control, and deployment consistency.</li>
+        <li>Optimized Databricks cluster performance through autoscaling, job tuning, and storage optimization, reducing compute costs while improving execution efficiency.</li>
+        <li>Integrated CMS data with Databricks pipelines using Azure Data Factory and PySpark, enabling ingestion and transformation of <span class="highlight">2TB+ unstructured content monthly</span> over 12 months to support scalable analytics solutions.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Skills</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-category reveal">
+        <p class="skill-cat-title">Databricks Platform</p>
+        <div class="skill-tags">
+          <span class="skill-tag">Delta Lake</span>
+          <span class="skill-tag">Databricks Jobs</span>
+          <span class="skill-tag">Databricks Notebooks</span>
+          <span class="skill-tag">Databricks SQL</span>
+          <span class="skill-tag">Spark Structured Streaming</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <p class="skill-cat-title">Data Engineering</p>
+        <div class="skill-tags">
+          <span class="skill-tag">ETL / ELT</span>
+          <span class="skill-tag">Data Warehousing</span>
+          <span class="skill-tag">Data Modelling</span>
+          <span class="skill-tag">Batch Processing</span>
+          <span class="skill-tag">PySpark</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <p class="skill-cat-title">Cloud & Orchestration</p>
+        <div class="skill-tags">
+          <span class="skill-tag">Azure Data Factory</span>
+          <span class="skill-tag">ADLS Gen2</span>
+          <span class="skill-tag">Azure Key Vault</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <p class="skill-cat-title">Databases & Formats</p>
+        <div class="skill-tags">
+          <span class="skill-tag">SQL Server</span>
+          <span class="skill-tag">Delta Lake</span>
+          <span class="skill-tag">Parquet</span>
+          <span class="skill-tag">CSV</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <p class="skill-cat-title">Programming</p>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">Scala</span>
+          <span class="skill-tag">SQL</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <p class="skill-cat-title">DevOps & Agile</p>
+        <div class="skill-tags">
+          <span class="skill-tag">Azure DevOps</span>
+          <span class="skill-tag">GitHub</span>
+          <span class="skill-tag">CI/CD</span>
+          <span class="skill-tag">Autosys</span>
+          <span class="skill-tag">ADF Triggers</span>
+          <span class="skill-tag">Scrum</span>
+          <span class="skill-tag">Jira</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Certifications</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="cert-grid">
+      <div class="cert-card reveal">
+        <p class="cert-issuer">Databricks</p>
+        <h3 class="cert-name">Certified Data Engineer Professional</h3>
+      </div>
+      <div class="cert-card reveal">
+        <p class="cert-issuer">Databricks</p>
+        <h3 class="cert-name">Certified Data Engineer Associate</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Education</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="edu-card reveal">
+      <div>
+        <h3 class="edu-degree">B.Tech in Information Technology</h3>
+        <p class="edu-inst">Bundelkhand Institute of Engineering &amp; Technology · UP, India</p>
+      </div>
+      <div class="edu-meta">
+        <span class="edu-year">July 2018 – May 2022</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Contact</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="contact-inner reveal">
+      <h2 class="contact-title">Let's build something <em>great</em></h2>
+      <p class="contact-sub">Open to new data engineering opportunities, collaborations, and conversations.</p>
+      <div class="contact-links">
+        <a class="contact-link" href="mailto:monu.kumar.dataeng@gmail.com">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+          monu.kumar.dataeng@gmail.com
+        </a>
+        <a class="contact-link" href="tel:+919536984907">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.08 3.4 2 2 0 0 1 3 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          +91-9536984907
+        </a>
+        <a class="contact-link" href="https://linkedin.com/in/monu-kumaar-4566631a5" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn Profile
+        </a>
+      </div>
+      <a class="btn" href="mailto:monu.kumar.dataeng@gmail.com">Send a message</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p class="footer-text">© 2025 <span>Monu Kumar</span> · Data Engineer</p>
+  <p class="footer-text">Built with <span>♥</span> &amp; clean code</p>
+</footer>
+
+<script>
+// ── CANVAS BACKGROUND: Data flow lines ──
+const canvas = document.getElementById('canvas-bg');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const NODES = [];
+const NODE_COUNT = 55;
+const MAX_DIST = 160;
+
+for (let i = 0; i < NODE_COUNT; i++) {
+  NODES.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    vx: (Math.random() - 0.5) * 0.35,
+    vy: (Math.random() - 0.5) * 0.35,
+    r: Math.random() * 1.5 + 0.5
+  });
+}
+
+function drawCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  NODES.forEach(n => {
+    n.x += n.vx; n.y += n.vy;
+    if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+    if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+  });
+
+  for (let i = 0; i < NODES.length; i++) {
+    for (let j = i + 1; j < NODES.length; j++) {
+      const dx = NODES[i].x - NODES[j].x;
+      const dy = NODES[i].y - NODES[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < MAX_DIST) {
+        const alpha = 1 - dist / MAX_DIST;
+        ctx.strokeStyle = `rgba(0, 217, 255, ${alpha * 0.6})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(NODES[i].x, NODES[i].y);
+        ctx.lineTo(NODES[j].x, NODES[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  NODES.forEach(n => {
+    ctx.fillStyle = 'rgba(0, 217, 255, 0.7)';
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(drawCanvas);
+}
+drawCanvas();
+
+// ── TYPED TITLE ──
+const titles = ['Data Engineer', 'Pipeline Architect', 'PySpark Developer', 'Delta Lake Expert'];
+let ti = 0, ci = 0, deleting = false;
+const el = document.getElementById('typed-title');
+
+function type() {
+  const word = titles[ti];
+  if (!deleting) {
+    el.textContent = word.slice(0, ++ci);
+    if (ci === word.length) { deleting = true; setTimeout(type, 2000); return; }
+  } else {
+    el.textContent = word.slice(0, --ci);
+    if (ci === 0) { deleting = false; ti = (ti + 1) % titles.length; }
+  }
+  setTimeout(type, deleting ? 60 : 90);
+}
+type();
+
+// ── SCROLL REVEAL ──
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+reveals.forEach(r => observer.observe(r));
+
+// ── COUNTER ANIMATION ──
+function animateCounter(el, target, suffix) {
+  let start = 0;
+  const step = target / 50;
+  const timer = setInterval(() => {
+    start += step;
+    if (start >= target) { start = target; clearInterval(timer); }
+    el.querySelector('span').previousSibling.textContent = Number.isInteger(target) ? Math.round(start) : start.toFixed(1);
+  }, 30);
+}
+</script>
+</body>
+</html>
